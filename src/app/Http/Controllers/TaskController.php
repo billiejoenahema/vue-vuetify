@@ -3,48 +3,69 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request): JsonResponse
     {
         if ($request->title) {
             $tasks = Task::where('title', 'like', '%' . $request->title . '%')->orderBy('created_at', 'desc')->get();
             return response()->json($tasks);
         }
         $tasks = Task::orderBy('created_at', 'desc')->get();
+
         return response()->json($tasks);
     }
 
-    public function show($id)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request): JsonResponse
     {
-        $task = Task::findOrFail($id);
-        return response()->json($task);
-    }
+        $data = $request->all();
 
-    public function store(Request $request)
-    {
-        $task = new Task();
-        $task->title = $request->title;
-        $task->description = $request->description;
-        $task->save();
+        $task = DB::transaction(static function () use ($data) {
+            return Task::create($data);
+        });
+
         return response()->json($task, 201);
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Display the specified resource.
+     */
+    public function show(Task $task): JsonResponse
     {
-        $task = Task::findOrFail($id);
-        $task->title = $request->title;
-        $task->description = $request->description;
-        $task->save();
         return response()->json($task);
     }
 
-    public function delete($id)
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Task $task): JsonResponse
     {
-        $task = Task::findOrFail($id);
+        $data = $request->all();
+
+        DB::transaction(static function () use ($data, $task) {
+            $task->fill($data)->save();
+        });
+
+        return response()->json($task);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Task $task): JsonResponse
+    {
         $task->delete();
+
         return response()->json(null, 204);
     }
 }

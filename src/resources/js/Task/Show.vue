@@ -5,19 +5,23 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 const task = ref("");
+
 onMounted(() => {
   getTask();
 });
+
+// 1件取得
 const getTask = async () => {
   const id = router.currentRoute.value.params.id;
   const res = await axios.get("/api/tasks/" + id);
   task.value = res.data;
 };
+// 更新
 const updateTask = async (id) => {
-  await axios.put("/api/tasks/" + id, task.value);
+  await axios.patch("/api/tasks/" + id, task.value);
   moveTasks();
 };
-
+// 一覧へ移動
 const moveTasks = () => {
   router.push({ name: "tasks" });
 };
@@ -41,7 +45,11 @@ const moveTasks = () => {
           </v-card-item>
 
           <v-card-item>
-            <v-textarea label="タスク説明" clearable v-model="task.description">
+            <v-textarea
+              label="タスクの説明"
+              clearable
+              v-model="task.description"
+            >
             </v-textarea>
           </v-card-item>
 

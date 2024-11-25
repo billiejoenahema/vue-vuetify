@@ -12,10 +12,12 @@ onMounted(() => {
   getTasks();
 });
 
+// 一覧を取得
 const getTasks = async () => {
   const res = await axios.get("/api/tasks");
   tasks.value = res.data;
 };
+// 検索
 const searchTask = async () => {
   const params = {
     title: searchTitle.value,
@@ -23,23 +25,27 @@ const searchTask = async () => {
   const res = await axios.get("/api/tasks", { params });
   tasks.value = res.data;
 };
+// 検索ワード削除
 const clearSearch = async () => {
   searchTitle.value = "";
   getTasks();
 };
+// 新規登録
 const addTask = async () => {
   const res = await axios.post("/api/tasks", { title: task.value, done: 0 });
   tasks.value.unshift(res.data);
   task.value = "";
 };
+// 削除
 const deleteTask = async (id) => {
   await axios.delete("/api/tasks/" + id);
   tasks.value = tasks.value.filter((task) => task.id !== id);
 };
-
+// 詳細ページに移動
 const moveTask = (id) => {
   router.push({ name: "show", params: { id: id } });
 };
+// 完了にする
 const doneEffect = (id) => {
   const checkbox = document.getElementById("checkbox-" + id);
   const label = document.getElementById("label-" + id);
@@ -92,10 +98,16 @@ const doneEffect = (id) => {
             <div :id="'label-' + task.id">{{ task.title }}</div>
           </template>
           <template v-slot:append>
-            <v-icon class="mr-6 cursor-pointer" @click="moveTask(task.id)"
+            <v-icon
+              class="mr-6 cursor-pointer"
+              title="編集"
+              @click="moveTask(task.id)"
               >mdi-file-document-edit</v-icon
             >
-            <v-icon class="mr-6 cursor-pointer" @click="deleteTask(task.id)"
+            <v-icon
+              class="mr-6 cursor-pointer"
+              title="削除"
+              @click="deleteTask(task.id)"
               >mdi-delete</v-icon
             >
           </template>

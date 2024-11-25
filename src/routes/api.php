@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TaskController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,8 +19,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/tasks', 'App\\Http\\Controllers\\TaskController@store')->name('tasks.store');
-Route::get('/tasks', 'App\\Http\\Controllers\\TaskController@index')->name('tasks.index');
-Route::get('/tasks/{id}', 'App\\Http\\Controllers\\TaskController@show')->name('tasks.show');
-Route::put('/tasks/{id}', 'App\\Http\\Controllers\\TaskController@update')->name('tasks.update');
-Route::delete('/tasks/{id}', 'App\\Http\\Controllers\\TaskController@delete')->name('tasks.delete');
+// タスク
+Route::get('/tasks', [TaskController::class, 'index']);
+Route::post('/tasks', [TaskController::class, 'store']);
+Route::get('/tasks/{task}', [TaskController::class, 'show']);
+Route::patch('/tasks/{task}', [TaskController::class, 'update']);
+Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);
