@@ -1,9 +1,10 @@
 services:
   app:
-    build: ./infra/php
+    build: ./docker/php
     ports:
       - 5173:5173
     volumes:
+      - ./src:/data:delegated,uid=1000,gid=1000
       - ./src:/data
 
   web:
@@ -12,11 +13,11 @@ services:
       - 8080:80
     volumes:
       - ./src:/data
-      - ./infra/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     working_dir: /data
 
   db:
-    build: ./infra/mysql
+    build: ./docker/mysql
     volumes:
       - db-store:/var/lib/mysql
 

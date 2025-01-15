@@ -38,7 +38,6 @@ RUN docker-php-ext-install \
 RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs
 
-
 COPY ./php.ini /usr/local/etc/php/php.ini
 
 WORKDIR /data
