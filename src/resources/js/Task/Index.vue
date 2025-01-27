@@ -4,13 +4,27 @@ import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
+const constants = ref([]);
 const task = ref("");
 const tasks = ref([]);
 const searchTitle = ref("");
+const priorityTextValue = (priority) => {
+  const priorityText = constants.value.priorities.find(
+    (p) => p.value === priority
+  );
+  return priorityText ? priorityText.text : "";
+};
 
 onMounted(() => {
   getTasks();
+  getConstants();
 });
+
+// 定数を取得
+const getConstants = async () => {
+  const res = await axios.get("/api/constants");
+  constants.value = res.data;
+};
 
 // 一覧を取得
 const getTasks = async () => {
@@ -96,6 +110,9 @@ const doneEffect = (id) => {
         >
           <template v-slot:label>
             <div :id="'label-' + task.id">{{ task.title }}</div>
+            <div :id="'priority-' + task.id" class="priority">
+              【{{ priorityTextValue(task.priority) }}】
+            </div>
           </template>
           <template v-slot:append>
             <v-icon

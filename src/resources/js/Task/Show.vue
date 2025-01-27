@@ -4,11 +4,29 @@ import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
-const task = ref("");
+const task = ref({
+  title: "",
+  description: "",
+  priority: "",
+});
+const constants = ref({});
+const priorities = ref([]);
 
 onMounted(() => {
   getTask();
+  getConstants();
+  console.log(priorities.value);
 });
+// 定数を取得
+const getConstants = async () => {
+  const res = await axios.get("/api/constants");
+  constants.value = res.data;
+  await getPriorities();
+};
+// 優先度を取得
+const getPriorities = async () => {
+  priorities.value = constants.value.priorities;
+};
 
 // 1件取得
 const getTask = async () => {
@@ -51,6 +69,18 @@ const moveTasks = () => {
               v-model="task.description"
             >
             </v-textarea>
+          </v-card-item>
+
+          <!-- 優先度 -->
+          <v-card-item>
+            <v-select
+              label="優先度"
+              clearable
+              v-model="task.priority"
+              item-title="text"
+              item-value="value"
+              :items="priorities"
+            ></v-select>
           </v-card-item>
 
           <v-card-actions>
