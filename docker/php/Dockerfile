@@ -38,6 +38,9 @@ RUN docker-php-ext-install \
 RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs
 
+# `ll` コマンドのエイリアスを追加
+RUN echo "alias ll='ls -l --color=auto'" >> /etc/bash.bashrc
+
 COPY ./php.ini /usr/local/etc/php/php.ini
 
 WORKDIR /data
