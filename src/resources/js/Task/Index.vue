@@ -8,6 +8,7 @@ const constants = ref([]);
 const task = ref("");
 const tasks = ref([]);
 const searchTitle = ref("");
+const searchPriority = ref("");
 const priorityTextValue = (priority) => {
   const priorityText = constants.value.priorities.find(
     (p) => p.value === priority
@@ -16,8 +17,8 @@ const priorityTextValue = (priority) => {
 };
 
 onMounted(() => {
-  getTasks();
   getConstants();
+  getTasks();
 });
 
 // 定数を取得
@@ -35,6 +36,7 @@ const getTasks = async () => {
 const searchTask = async () => {
   const params = {
     title: searchTitle.value,
+    priority: searchPriority.value,
   };
   const res = await axios.get("/api/tasks", { params });
   tasks.value = res.data;
@@ -42,6 +44,7 @@ const searchTask = async () => {
 // 検索ワード削除
 const clearSearch = async () => {
   searchTitle.value = "";
+  searchPriority.value = "";
   getTasks();
 };
 // 新規登録
@@ -78,15 +81,29 @@ const doneEffect = (id) => {
 
         <v-spacer></v-spacer>
 
+        <!-- Enterキー押下でsearchTaskメソッドを呼び出す -->
         <v-text-field
           label="タスク検索"
           variant="outlined"
           class="w-25"
           hide-details
           density="compact"
-          clearable
+          @keyup.enter="searchTask"
           v-model="searchTitle"
         ></v-text-field>
+
+        <v-spacer></v-spacer>
+
+        <!-- 優先度で検索 選択値が変更されたら検索実行 -->
+        <v-select
+          label="優先度"
+          v-model="searchPriority"
+          :items="constants.priorities"
+          item-title="text"
+          item-value="value"
+          density="compact"
+          hide-details
+        ></v-select>
         <v-btn icon="mdi-magnify" @click="searchTask"></v-btn>
         <v-btn icon="mdi-close" @click="clearSearch"></v-btn>
       </v-toolbar>

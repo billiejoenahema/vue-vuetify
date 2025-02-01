@@ -15,7 +15,6 @@ const priorities = ref([]);
 onMounted(() => {
   getTask();
   getConstants();
-  console.log(priorities.value);
 });
 // 定数を取得
 const getConstants = async () => {
@@ -75,7 +74,6 @@ const moveTasks = () => {
           <v-card-item>
             <v-select
               label="優先度"
-              clearable
               v-model="task.priority"
               item-title="text"
               item-value="value"
