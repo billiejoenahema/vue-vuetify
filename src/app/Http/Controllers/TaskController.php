@@ -14,11 +14,14 @@ class TaskController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        $query = Task::query();
         if ($request->title) {
-            $tasks = Task::where('title', 'like', '%' . $request->title . '%')->orderBy('created_at', 'desc')->get();
-            return response()->json($tasks);
+            $query->where('title', 'like', '%' . $request->title . '%');
         }
-        $tasks = Task::orderBy('created_at', 'desc')->get();
+        if ($request->priority) {
+            $query->where('priority', $request->priority);
+        }
+        $tasks = $query->orderby('updated_at', 'desc')->get();
 
         return response()->json($tasks);
     }
