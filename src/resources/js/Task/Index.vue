@@ -1,4 +1,5 @@
 <script setup>
+import Loader from "@/components/Loader.vue";
 import axios from "axios";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
@@ -15,10 +16,15 @@ const priorityTextValue = (priority) => {
   );
   return priorityText ? priorityText.text : "";
 };
+const isLoading = ref(false);
 
 onMounted(() => {
+  isLoading.value = true;
   getConstants();
   getTasks();
+  setTimeout(() => {
+    isLoading.value = false;
+  }, 1000);
 });
 
 // 定数を取得
@@ -75,7 +81,8 @@ const doneEffect = (id) => {
 </script>
 <template>
   <v-main>
-    <v-card class="mx-auto mt-16" width="600">
+    <loader v-if="isLoading" />
+    <v-card class="mx-auto mt-16" width="800">
       <v-toolbar color="purple">
         <v-toolbar-title>Todo Card</v-toolbar-title>
 
