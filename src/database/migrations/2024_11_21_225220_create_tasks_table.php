@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('title')->comment('タスク名');
             $table->text('description')->comment('タスクの説明')->nullable();
+            $table->boolean('is_done')->default(false)->comment('完了フラグ');
             $table->datetime('created_at');
             $table->datetime('updated_at');
         });

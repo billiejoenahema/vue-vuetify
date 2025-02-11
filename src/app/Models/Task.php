@@ -17,5 +17,16 @@ class Task extends Model
         'title',
         'description',
         'priority',
+        'is_done',
     ];
+
+    /**
+     * キャストする属性
+     *
+     * @var array<int, string>
+     */
+    protected $casts = [
+        'is_done' => 'boolean',
+    ];
+
 }
