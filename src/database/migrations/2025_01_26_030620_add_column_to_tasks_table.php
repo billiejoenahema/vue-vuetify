@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('tasks', function (Blueprint $table) {
-            // 優先度というカラムを追加する（高: 3, 中: 2, 低: 1）
-            $table->unsignedTinyInteger('priority')->default(1)->after('description')->comment('優先度');
+            // 優先度というカラムを追加する（高: 2, 中: 1, 低: 0）
+            $table->unsignedTinyInteger('priority')->default(0)->after('description')->comment('優先度');
         });
     }
 
