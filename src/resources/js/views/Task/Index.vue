@@ -2,16 +2,23 @@
 import Loader from "@/components/Loader.vue";
 import axios from "axios";
 import { onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
 
-const router = useRouter();
-const constants = ref([]);
-const task = ref("");
-const tasks = ref([]);
+const constants = ref({
+  priorities: [],
+});
+const newTask = ref("");
+const tasks = ref([
+  {
+    id: 0,
+    title: "",
+    priority: 0,
+    is_done: false,
+  },
+]);
 const searchTitle = ref("");
 const searchPriority = ref("");
 const priorityTextValue = (priority) => {
-  const priorityText = constants.value.priorities.find(
+  const priorityText = constants?.value.priorities.find(
     (p) => p.value === priority
   );
   return priorityText ? priorityText.text : "";
@@ -55,30 +62,23 @@ const clearSearch = async () => {
 };
 // 新規登録
 const addTask = async () => {
-  const res = await axios.post("/api/tasks", { title: task.value, done: 0 });
+  const res = await axios.post("/api/tasks", { title: newTask.value, done: 0 });
   tasks.value.unshift(res.data);
-  task.value = "";
+  newTask.value = "";
 };
 // 削除
 const deleteTask = async (id) => {
   await axios.delete("/api/tasks/" + id);
   tasks.value = tasks.value.filter((task) => task.id !== id);
 };
-// 詳細ページに移動
-const moveTask = (id) => {
-  router.push({ name: "show", params: { id: id } });
-};
-// 完了にする
-const doneEffect = (id) => {
-  const checkbox = document.getElementById("checkbox-" + id);
-  const label = document.getElementById("label-" + id);
-  if (checkbox.checked) {
-    label.parentElement.style.textDecoration = "line-through";
-  } else {
-    label.parentElement.style.textDecoration = "none";
-  }
+
+// 完了状態の変更
+const changeDoneStatus = async (task) => {
+  await axios.patch("/api/tasks/" + task.id, task);
+  getTasks();
 };
 </script>
+
 <template>
   <v-main>
     <loader v-if="isLoading" />
@@ -119,7 +119,7 @@ const doneEffect = (id) => {
         <v-text-field
           label="タスク追加"
           clearable
-          v-model="task"
+          v-model="newTask"
         ></v-text-field>
       </v-form>
 
@@ -128,8 +128,8 @@ const doneEffect = (id) => {
         <v-checkbox
           v-for="task in tasks"
           :key="task.id"
-          :label="task.title"
-          @change="doneEffect(task.id)"
+          v-model="task.is_done"
+          @change="changeDoneStatus(task)"
           :id="'checkbox-' + task.id"
         >
           <template v-slot:label>
@@ -139,12 +139,11 @@ const doneEffect = (id) => {
             </div>
           </template>
           <template v-slot:append>
-            <v-icon
-              class="mr-6 cursor-pointer"
-              title="編集"
-              @click="moveTask(task.id)"
-              >mdi-file-document-edit</v-icon
-            >
+            <router-link :to="{ name: 'task-edit', params: { id: task.id } }">
+              <v-icon class="mr-6 cursor-pointer" title="編集"
+                >mdi-file-document-edit</v-icon
+              >
+            </router-link>
             <v-icon
               class="mr-6 cursor-pointer"
               title="削除"

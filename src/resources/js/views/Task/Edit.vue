@@ -40,7 +40,7 @@ const updateTask = async (id) => {
 };
 // 一覧へ移動
 const moveTasks = () => {
-  router.push({ name: "tasks" });
+  router.push({ name: "task-index" });
 };
 </script>
 
